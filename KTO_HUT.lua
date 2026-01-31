@@ -543,8 +543,8 @@ task.spawn(function()
     -- [ 🪄 ระบบคฑา ]
     local Wand = Instance.new("Tool"); Wand.Name = "🪄 MAZDA BUILDER"; Wand.RequiresHandle = true
     local H = Instance.new("Part", Wand); H.Name = "Handle"; H.Size = Vector3.new(0.4, 4, 0.4); H.Color = Color3.fromRGB(255,215,0); H.Material = "Neon"
-    Wand.Activated:Connect(function()
-                            local target = Mouse.Target
+Wand.Activated:Connect(function()
+    local target = Mouse.Target
     local pos
     if target and target.Name:find("MazdaObj") then
         local normal = Vector3.FromNormalId(Mouse.TargetSurface)
@@ -552,11 +552,48 @@ task.spawn(function()
     else
         pos = SnapToGrid(Mouse.Hit.p + Vector3.new(0, GridSize/2, 0))
     end
+    
+    -- ท่อนที่แหว่งไป ผมเติมให้แล้วครับบอส:
     if CurrentItem == "Eraser" then 
         if target and target.Name:find("MazdaObj") then target:Destroy() end
     elseif CurrentItem ~= "Nuke" then 
         CreateObject(CurrentItem, pos) 
     end
-end
-        end)
-    
+end)
+        
+        
+        
+
+    -- [ 🔘 ปุ่มสี่เหลี่ยมจิ๋ว (Mini Square Toggle) ]
+    local Toggle = Instance.new("TextButton", sg)
+    Toggle.Size = UDim2.new(0, 50, 0, 50) -- ขนาดสี่เหลี่ยมจิ๋ว
+    Toggle.Position = UDim2.new(0.1, 0, 0.5, 0) -- กึ่งกลางจอเบี่ยงซ้าย
+    Toggle.Text = "🛠️"
+    Toggle.TextSize = 25
+    Toggle.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    Toggle.TextColor3 = Color3.new(1,1,1)
+    Toggle.ZIndex = 10
+    Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 8)
+
+    -- [ 🛠️ ระบบลากสำหรับปุ่มสี่เหลี่ยม ]
+    local dragging, dragInput, dragStart, startPos
+    Toggle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true; dragStart = input.Position; startPos = Toggle.Position
+            input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
+        end
+    end)
+    UIS.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            Toggle.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            Frame.Position = UDim2.new(Toggle.Position.X.Scale, Toggle.Position.X.Offset + 60, Toggle.Position.Y.Scale, Toggle.Position.Y.Offset)
+        end
+    end)
+
+    Toggle.MouseButton1Click:Connect(function()
+        Frame.Visible = not Frame.Visible
+        Toggle.BackgroundColor3 = Frame.Visible and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(45, 45, 45)
+        Wand.Parent = Frame.Visible and LP.Backpack or nil
+    end)
+end)
