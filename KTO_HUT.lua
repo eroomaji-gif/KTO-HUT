@@ -286,7 +286,7 @@ end, "Settings")
 
 -- [[ หน้าแจ้งบัค (ครบ) ]]
 CreateBtn("right", -110, "🐛 แจ้งบัค", Color3.fromRGB(180, 0, 0), function() Notify("🚨 TikTok: Mazda 004") end, "Bug")
-CreateBtn("right", -65, "📱 TikTok", Color3.fromRGB(0, 0, 0), function() setclipboard("https://www.tiktok.com/@kto_hub") Notify("คัดลอกลิงก์แล้ว!") end, "Bug")
+CreateBtn("right", -65, "📱 TikTok", Color3.fromRGB(0, 0, 0), function() setclipboard("https://www.tiktok.com/@s.smel") Notify("คัดลอกลิงก์แล้ว!") end, "Bug")
 
 -- [[ ระบบถืออาวุธ ]]
 task.spawn(function()
@@ -541,13 +541,20 @@ task.spawn(function()
     NukBtn.MouseButton1Click:Connect(function() for _, v in pairs(workspace:GetChildren()) do if v.Name:find("MazdaObj") then v:Destroy() end end end)
 
     -- [ 🪄 ระบบคฑา ]
-    local Wand = Instance.new("Tool"); Wand.Name = "🪄 MAZDA BUILDER"; Wand.RequiresHandle = true
-    local H = Instance.new("Part", Wand); H.Name = "Handle"; H.Size = Vector3.new(0.4, 4, 0.4); H.Color = Color3.fromRGB(255,215,0); H.Material = "Neon"
-    Wand.Activated:Connect(function()
-        local pos = SnapToGrid(Mouse.Hit.p + Vector3.new(0, GridSize/2, 0))
-        if CurrentItem == "Eraser" then if Mouse.Target and Mouse.Target.Name:find("MazdaObj") then Mouse.Target:Destroy() end
-        elseif CurrentItem ~= "Nuke" then CreateObject(CurrentItem, pos) end
-    end)
+        local target = Mouse.Target
+        local pos
+        if target and target.Name:find("MazdaObj") then
+            local normal = Vector3.FromNormalId(Mouse.TargetSurface)
+            pos = target.Position + (normal * GridSize)
+        else
+            pos = SnapToGrid(Mouse.Hit.p + Vector3.new(0, GridSize/2, 0))
+        end
+        if CurrentItem == "Eraser" then 
+            if target and target.Name:find("MazdaObj") then target:Destroy() end
+        elseif CurrentItem ~= "Nuke" then 
+            CreateObject(CurrentItem, pos) 
+        end
+        
 
     -- [ 🔘 ปุ่มสี่เหลี่ยมจิ๋ว (Mini Square Toggle) ]
     local Toggle = Instance.new("TextButton", sg)
